@@ -3,8 +3,8 @@ import os
 import time
 
 API_URL = 'https://gz2pve4omi.execute-api.us-west-1.amazonaws.com'
-UPLOAD_ENDPOINT = API_URL +'/prod/uploadfile'
-POLL_ENDPOINT = API_URL + '/prod/pollfile/'
+UPLOAD_ENDPOINT = API_URL +'/prod/upload-file'
+POLL_ENDPOINT = API_URL + '/prod/poll-file/'
 POLL_INTERVAL = 15 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
