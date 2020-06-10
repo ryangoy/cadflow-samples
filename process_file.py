@@ -2,13 +2,14 @@ import requests
 import os
 import time
 
-API_URL = 'https://gz2pve4omi.execute-api.us-west-1.amazonaws.com'
+API_URL = 'https://m1226tf1be.execute-api.us-west-1.amazonaws.com'
 UPLOAD_ENDPOINT = API_URL +'/prod/upload-file'
 POLL_ENDPOINT = API_URL + '/prod/poll-file/'
 POLL_INTERVAL = 15 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
 def get_token(m2m_id, m2m_secret):
+    print('Fetching token...')
     res = requests.post("https://cadflow.auth0.com/oauth/token", 
         headers = {
             'content-type': 'application/x-www-form-urlencoded'},
@@ -38,21 +39,31 @@ def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
                 "abr": abr,
                 "basing": basing,
                 "trim": trim
-            }}).json()
+            }})
+
+    if ul_resp.status_code != 200:
+        print(ul_resp.text)
+        return
 
     # Upload .stl file to s3 using a pre-signed url
-    print(ul_resp)
-    os.system(f"curl -T {filename} '{ul_resp['url']}'")
-    print('Finished uploading file')
+    print('Uploading file...')
+    os.system(f"curl -T {filename} '{ul_resp.json()['url']}'")
 
     # Poll for processed file
     print("Beginning polling, waiting for file to become available for download.")
     new_fname = os.path.basename(filename).split('.')[0] + '_processed.stl'
+
     while True:
-        poll_resp = requests.get(POLL_ENDPOINT + str(ul_resp['fid']), headers=header)
-        print(poll_resp)
+        # Poll with fid as a path parameter
+        poll_resp = requests.get(POLL_ENDPOINT + str(ul_resp.json()['fid']), headers=header)
+        print(f'Poll received status {poll_resp.status_code} with message {poll_resp.text}')
+
         if poll_resp.status_code == 200:
+            # Download processed file
             os.system(f"curl -o {new_fname} '{poll_resp.json()['url']}'")
+            break
+        elif poll_resp.status_code == 400:
+            print('Exiting.')
             break
         else:
             time.sleep(POLL_INTERVAL)
@@ -61,5 +72,5 @@ def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
 
 if __name__ == '__main__':
 
-    token = get_token('cXYJtY55DI5KN03cDxv540u0vg08tkyg', 'mheDMDKX4nmq-MfTNdLOrAsUwrSFe2gWRc_HNVpdbnqX-9RZQZ23Fg8fM-qS2oXm')
-    process_file('google-oauth2|115005983988899165588', '/home/ryan/Desktop/input.stl', token)
+    token = get_token('S9qR2BX2HfGR2u799mgnhXtN46DOxqQL', 'WwJfkX05vCjpT41MoEr-C9C_InrlGKxrzMyMnV6Spsh1Ms3BlOMNrlgffHvbSpsM')
+    process_file('google-oauth2|115005983988899165588', '/home/ryan/Desktop/landing_removed.stl', token)
