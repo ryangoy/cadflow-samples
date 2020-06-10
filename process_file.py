@@ -72,5 +72,9 @@ def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
 
 if __name__ == '__main__':
 
-    token = get_token('S9qR2BX2HfGR2u799mgnhXtN46DOxqQL', 'WwJfkX05vCjpT41MoEr-C9C_InrlGKxrzMyMnV6Spsh1Ms3BlOMNrlgffHvbSpsM')
-    process_file('google-oauth2|115005983988899165588', '/home/ryan/Desktop/landing_removed.stl', token)
+    public_key = #DEFINE
+    private_key = #DEFINE
+    user_id = #DEFINE
+    token = #DEFINE
+    token = get_token(public_key, private_key)
+    process_file(user_id, input_file_path, token)
