@@ -2,9 +2,9 @@ import requests
 import os
 import time
 
-API_URL = 'https://m1226tf1be.execute-api.us-west-1.amazonaws.com'
-UPLOAD_ENDPOINT = API_URL +'/prod/upload-file'
-POLL_ENDPOINT = API_URL + '/prod/poll-file/'
+API_URL = 'https://api.cadflow.ai'
+UPLOAD_ENDPOINT = API_URL +'/upload-file'
+POLL_ENDPOINT = API_URL + '/poll-file/'
 POLL_INTERVAL = 15 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
@@ -30,7 +30,7 @@ def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
     assert type(abr) == bool and not basing and not trim # basing and trim are turned off currently
 
     header = {'Authorization': f'Bearer {token}'}
-
+    print('Upload prescription...')
     # POST prescription and retrieve upload and download urls
     ul_resp = requests.put(UPLOAD_ENDPOINT, headers=header, json={
             "cid": user_id,
@@ -47,7 +47,7 @@ def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
 
     # Upload .stl file to s3 using a pre-signed url
     print('Uploading file...')
-    os.system(f"curl -T {filename} '{ul_resp.json()['url']}'")
+    os.system(f"curl -T {filename} -H 'Content-Type: model/stl' '{ul_resp.json()['url']}'")
 
     # Poll for processed file
     print("Beginning polling, waiting for file to become available for download.")
@@ -55,19 +55,19 @@ def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
 
     while True:
         # Poll with fid as a path parameter
-        poll_resp = requests.get(POLL_ENDPOINT + str(ul_resp.json()['fid']), headers=header)
+        poll_resp = requests.post(POLL_ENDPOINT + str(ul_resp.json()['fid']), headers=header)
         print(f'Poll received status {poll_resp.status_code} with message {poll_resp.text}')
 
         if poll_resp.status_code == 200:
             # Download processed file
             os.system(f"curl -o {new_fname} '{poll_resp.json()['url']}'")
+            print(f'Processing finished, downloaded to {new_fname}.')
             break
         elif poll_resp.status_code == 400:
             print('Exiting.')
             break
         else:
             time.sleep(POLL_INTERVAL)
-    print(f'Processing finished, downloaded to {new_fname}.')
 
 
 if __name__ == '__main__':
