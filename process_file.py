@@ -20,21 +20,25 @@ def get_token(m2m_id, m2m_secret):
             'audience': 'https://cadflow.ai/api'
         }
     ) 
+    if res.status_code != 200:
+        print("Invalid credentials. Exiting..")
+        exit()
+
     return res.json()['access_token']
 
 # Post request requires cid (customer id), filename, and prescription
-def process_file(user_id, filename, token, abr=True, basing=False, trim=False):
+def process_file(filename, token, practice_id='abc123', prescription_id='def456789', abr=True, basing=False, trim=False):
     
     assert type(filename) == str and filename.endswith('.stl')
-    assert type(user_id) == str
     assert type(abr) == bool and not basing and not trim # basing and trim are turned off currently
 
     header = {'Authorization': f'Bearer {token}'}
     print('Upload prescription...')
     # POST prescription and retrieve upload and download urls
     ul_resp = requests.put(UPLOAD_ENDPOINT, headers=header, json={
-            "cid": user_id,
             "filename": os.path.basename(filename),
+            "practice_id": practice_id,
+            "prescription_id": prescription_id,
             "prescription": {
                 "abr": abr,
                 "basing": basing,
@@ -74,7 +78,6 @@ if __name__ == '__main__':
 
     public_key = #DEFINE
     private_key = #DEFINE
-    user_id = #DEFINE
     token = #DEFINE
     token = get_token(public_key, private_key)
-    process_file(user_id, input_file_path, token)
+    process_file(input_file_path, token)
