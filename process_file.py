@@ -8,14 +8,14 @@ POLL_ENDPOINT = API_URL + '/poll-file/'
 POLL_INTERVAL = 15 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
-def get_token(api_key, refresh_token):
+def get_token(client_id, refresh_token):
     print('Fetching token...')
     res = requests.post("https://cadflow.auth0.com/oauth/token", 
         headers = {
             'content-type': 'application/x-www-form-urlencoded'},
         data = {
             'grant_type': 'refresh_token',
-            'client_id': api_key,
+            'client_id': client_id,
             'refresh_token': refresh_token,
             'audience': 'https://cadflow.ai/api'
         }
@@ -76,7 +76,7 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
 
 if __name__ == '__main__':
 
-    api_key = #DEFINE
+    client_id = #DEFINE
     refresh_token = #DEFINE
-    token = get_token(api_key, refresh_token)
+    token = get_token(client_id, refresh_token)
     process_file(input_file_path, token)
