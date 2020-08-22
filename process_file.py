@@ -76,8 +76,7 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
 
 if __name__ == '__main__':
 
-    public_key = #DEFINE
-    private_key = #DEFINE
-    token = #DEFINE
-    token = get_token(public_key, private_key)
+    api_key = #DEFINE
+    refresh_token = #DEFINE
+    token = get_token(api_key, refresh_token)
     process_file(input_file_path, token)
