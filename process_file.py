@@ -8,15 +8,15 @@ POLL_ENDPOINT = API_URL + '/poll-file/'
 POLL_INTERVAL = 15 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
-def get_token(m2m_id, m2m_secret):
+def get_token(api_key, refresh_token):
     print('Fetching token...')
     res = requests.post("https://cadflow.auth0.com/oauth/token", 
         headers = {
             'content-type': 'application/x-www-form-urlencoded'},
         data = {
-            'grant_type': 'client_credentials',
-            'client_id': m2m_id,
-            'client_secret': m2m_secret,
+            'grant_type': 'refresh_token',
+            'client_id': api_key,
+            'refresh_token': refresh_token,
             'audience': 'https://cadflow.ai/api'
         }
     ) 
@@ -50,12 +50,12 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
         return
 
     # Upload .stl file to s3 using a pre-signed url
-    print('Uploading file...')
+    print(f'Uploading file with fid {ul_resp.json()["fid"]}...')
     os.system(f"curl -T {filename} -H 'Content-Type: model/stl' '{ul_resp.json()['url']}'")
 
     # Poll for processed file
     print("Beginning polling, waiting for file to become available for download.")
-    new_fname = os.path.basename(filename).split('.')[0] + '_processed.stl'
+    new_fname = filename.split('.')[0] + '_processed.stl'
 
     while True:
         # Poll with fid as a path parameter
