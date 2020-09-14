@@ -12,24 +12,24 @@ define('POLL_INTERVAL', 15);
 
 class CADflow
 {
-  private $m2m_id = null;
-  private $m2m_secret = null;
+  private $client_id = null;
+  private $refresh_token = null;
   private $access_token = null;
   private $file_id = null;
   private $verbose = false;
 
   /**
-   * @param	string	$m2m_id		Client ID provided by CADflow.
-   * @param	string	$m2m_secret	Client secret provided by CADflow.
+   * @param	string	$client_id		Client ID provided by CADflow.
+   * @param	string	$refresh_token	Client secret provided by CADflow.
    */
-  public function __construct($m2m_id, $m2m_secret)
+  public function __construct($client_id, $refresh_token)
   {
-    if (empty($m2m_id) || empty($m2m_secret)) {
-      throw new Exception('ID and secret must be passed to the constructor.');
+    if (empty($client_id) || empty($refresh_token)) {
+      throw new Exception('ID and token must be passed to the constructor.');
     }
 
-    $this->m2m_id = $m2m_id;
-    $this->m2m_secret = $m2m_secret;
+    $this->client_id = $client_id;
+    $this->refresh_token = $refresh_token;
   }
 
   /**
@@ -51,9 +51,9 @@ class CADflow
   public function get_token()
   {
     $data = array(
-      'grant_type' => 'client_credentials',
-      'client_id' => $this->m2m_id,
-      'client_secret' => $this->m2m_secret,
+      'grant_type' => 'refresh_token',
+      'client_id' => $this->client_id,
+      'refresh_token' => $this->refresh_token,
       'audience' => 'https://cadflow.ai/api'
     );
 
