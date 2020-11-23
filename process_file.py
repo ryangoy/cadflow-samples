@@ -41,7 +41,7 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
             "prescription_id": prescription_id,
             "prescription": {
                 "abr": abr,
-                "basing": basing,
+                "base": basing,
                 "trim": trim
             }})
 
