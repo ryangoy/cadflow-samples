@@ -5,7 +5,7 @@ import time
 API_URL = 'https://api.cadflow.ai'
 UPLOAD_ENDPOINT = API_URL +'/upload-file'
 POLL_ENDPOINT = API_URL + '/poll-file/'
-POLL_INTERVAL = 15 # Time between poll calls in seconds
+POLL_INTERVAL = 30 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
 def get_token(client_id, refresh_token):
@@ -27,10 +27,9 @@ def get_token(client_id, refresh_token):
     return res.json()['access_token']
 
 # Post request requires cid (customer id), filename, and prescription
-def process_file(filename, token, practice_id='abc123', prescription_id='def456789', abr=True, basing=False, trim=False):
+def process_file(filename, token, practice_id='abc123', prescription_id='def456789', abr=True, basing=True, trim=True):
     
     assert type(filename) == str and filename.endswith('.stl')
-    assert type(abr) == bool and not basing and not trim # basing and trim are turned off currently
 
     header = {'Authorization': f'Bearer {token}'}
     print('Upload prescription...')
@@ -42,7 +41,14 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
             "prescription": {
                 "abr": abr,
                 "base": basing,
-                "trim": trim
+                "trim": trim,
+                "params": {
+                    "trim_horseshoe": True,
+                    "trim_margin": 3.0,
+                    "base_margin": 2.0,
+                    "base_label": "Your Label Here",
+                    "base_z_axis_aligned": True,
+                }
             }})
 
     if ul_resp.status_code != 200:
@@ -67,7 +73,7 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
             os.system(f"curl -o {new_fname} '{poll_resp.json()['url']}'")
             print(f'Processing finished, downloaded to {new_fname}.')
             break
-        elif poll_resp.status_code == 400:
+        elif poll_resp.status_code != 503 and poll_resp.status_code >= 400:
             print('Exiting.')
             break
         else:
@@ -78,5 +84,9 @@ if __name__ == '__main__':
 
     client_id = #DEFINE
     refresh_token = #DEFINE
+                      
+    # Retrieve token once every 10 hours
     token = get_token(client_id, refresh_token)
+    
+    # Call this method any number of times with the same token                  
     process_file(input_file_path, token)
