@@ -72,6 +72,9 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
             # Download processed file
             os.system(f"curl -o {new_fname} '{poll_resp.json()['url']}'")
             print(f'Processing finished, downloaded to {new_fname}.')
+            if 'trimpath_url' in poll_resp.json():
+                os.system(f"curl -o {new_trimpath_fname} '{poll_resp.json()['trimpath_url']}'")
+                print(f'Trim path, downloaded to {new_trimpath_fname}.')
             break
         elif poll_resp.status_code != 503 and poll_resp.status_code >= 400:
             print('Exiting.')
