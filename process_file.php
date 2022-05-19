@@ -5,7 +5,7 @@
  */
 
 define('OAUTH_URL', 'https://cadflow.auth0.com/oauth/token');
-define('API_URL', 'https://api.cadflow.ai');
+define('API_URL', 'https://api2.cadflow.ai');
 define('UPLOAD_ENDPOINT', API_URL . '/upload-file');
 define('POLL_ENDPOINT', API_URL . '/poll-file/');
 define('POLL_INTERVAL', 15);
