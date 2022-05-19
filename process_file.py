@@ -2,10 +2,10 @@ import requests
 import os
 import time
 
-API_URL = 'https://api.cadflow.ai'
+API_URL = 'https://api2.cadflow.ai'
 UPLOAD_ENDPOINT = API_URL +'/upload-file'
 POLL_ENDPOINT = API_URL + '/poll-file/'
-POLL_INTERVAL = 30 # Time between poll calls in seconds
+POLL_INTERVAL = 15 # Time between poll calls in seconds
 
 # Retrieves token, valid for 24 hours
 def get_token(client_id, refresh_token):
