@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2020 EasyRx LLC. All rights reserved.
+ * DEPRECATED
  */
 
 define('OAUTH_URL', 'https://cadflow.auth0.com/oauth/token');
