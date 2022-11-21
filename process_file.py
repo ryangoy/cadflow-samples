@@ -27,7 +27,7 @@ def get_token(client_id, refresh_token):
     return res.json()['access_token']
 
 # Post request requires cid (customer id), filename, and prescription
-def process_file(filename, token, practice_id='abc123', prescription_id='def456789', abr=True, basing=True, trim=True):
+def process_file(filename, token, practice_id='abc123', prescription_id='def456789', abr=True, basing=True, trimpath=True):
     
     assert type(filename) == str and filename.endswith('.stl')
 
@@ -41,13 +41,15 @@ def process_file(filename, token, practice_id='abc123', prescription_id='def4567
             "prescription": {
                 "abr": abr,
                 "base": basing,
-                "trim": trim,
+                "trimpath": trimpath,
                 "params": {
-                    "trim_horseshoe": True,
-                    "trim_margin": 3.0,
+                    "base_type": "HORSESHOE",
+                    "base_crop": 3.0,
                     "base_margin": 2.0,
+                    "trimpath_type": "STRAIGHT",
+                    "trimpath_margin": 2.5,
                     "base_label": "Your Label Here",
-                    "base_z_axis_aligned": True,
+                    "base_orientation": "Z_ALIGNED
                 }
             }})
 
